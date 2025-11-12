@@ -1,4 +1,5 @@
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
@@ -93,6 +94,23 @@ const ProxyMenuToggle = GObject.registerClass(
 
 export default class ProxySwitcherExtension extends Extension {
 
+    _executeCommand(mode) {
+        // Get the command for the specified mode from settings
+        const commandKey = `command-${mode}`;
+        const command = this.settings.get_string(commandKey);
+        
+        // Only execute if a command is configured
+        if (command && command.trim() !== '') {
+            try {
+                // Execute the command asynchronously
+                GLib.spawn_command_line_async(command);
+            } catch (e) {
+                // Log error but don't interrupt the proxy switching
+                console.error(`ProxySwitcher: Failed to execute command for mode '${mode}': ${e.message}`);
+            }
+        }
+    }
+
     enable() {
         // connect to the gsettings proxy schema
         if (Gio.Settings.list_schemas().indexOf(PROXY_SCHEMA) == -1)
@@ -111,7 +129,12 @@ export default class ProxySwitcherExtension extends Extension {
 
         // Register callback for changes to the settings
         this.settingsConnectionId = this.proxySettings.connect(
-            'changed::' + PROXY_MODE_KEY, () => switcherMenu._reflectSettings(this),
+            'changed::' + PROXY_MODE_KEY, () => {
+                switcherMenu._reflectSettings(this);
+                // Execute command for the new mode
+                const newMode = this.proxySettings.get_string(PROXY_MODE_KEY);
+                this._executeCommand(newMode);
+            },
         );
     }
 
