@@ -13,5 +13,29 @@
         is disabled.
       </description>
     </key>
+    <key name="command-none" type="s">
+      <default>''</default>
+      <summary>Command for None Mode</summary>
+      <description>
+        Shell command to execute when switching to 'none' (disabled) proxy mode.
+        Leave empty to disable command execution for this mode.
+      </description>
+    </key>
+    <key name="command-manual" type="s">
+      <default>''</default>
+      <summary>Command for Manual Mode</summary>
+      <description>
+        Shell command to execute when switching to 'manual' proxy mode.
+        Leave empty to disable command execution for this mode.
+      </description>
+    </key>
+    <key name="command-auto" type="s">
+      <default>''</default>
+      <summary>Command for Auto Mode</summary>
+      <description>
+        Shell command to execute when switching to 'auto' (automatic) proxy mode.
+        Leave empty to disable command execution for this mode.
+      </description>
+    </key>
   </schema>
 </schemalist>
